@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verdict Judge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Instrument+Sans:wght@400..600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="tb-left">
+      <a class="brand" href="#problems" aria-label="Verdict, back to the problem list">
+        <svg class="mark" viewBox="0 0 26 26" aria-hidden="true"><rect class="m-bg" x="1" y="1" width="24" height="24" rx="6"/><path class="m-br" d="M8 8.5L5 13l3 4.5M18 8.5l3 4.5-3 4.5"/><path class="m-ck" d="M10.2 13.2l2 2 3.8-4.4"/></svg>
+        <span class="brand-name">Verdict</span>
+      </a>
+      <div id="workNav" class="work-nav" hidden>
+        <a class="btn ghost sm" href="#problems" title="Problem list"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span class="hide-sm">Problems</span></a>
+        <button class="icon-btn" id="prevBtn" aria-label="Previous problem" title="Previous problem"><svg class="i" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="icon-btn" id="nextBtn" aria-label="Next problem" title="Next problem"><svg class="i" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="icon-btn" id="randBtn" aria-label="Random unsolved problem" title="Random unsolved problem"><svg class="i" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+      </div>
+    </div>
+    <div class="actions" id="actions" hidden>
+      <button class="btn" id="runBtn"></button>
+      <button class="btn primary" id="submitBtn"></button>
+    </div>
+    <div class="tb-right"><div class="solved-mini" id="solvedMini"></div></div>
+  </header>
+
+  <main id="listView" class="list-view">
+    <div class="list-head">
+      <h1>Eighteen problems, judged in your browser.</h1>
+      <p class="lede">Classic interview problems from arrays to dynamic programming. Write JavaScript, run it on your own testcases, then submit it against the examples plus 40 hidden tests, large inputs included.</p>
+    </div>
+    <div class="list-grid">
+      <section aria-label="Problems">
+        <div class="filters">
+          <label class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="q" type="search" placeholder="Search by title or topic" aria-label="Search problems" autocomplete="off"></label>
+          <div class="seg" role="group" aria-label="Difficulty" id="diffSeg">
+            <button data-d="All" aria-pressed="true">All</button><button data-d="Easy" aria-pressed="false">Easy</button><button data-d="Medium" aria-pressed="false">Medium</button><button data-d="Hard" aria-pressed="false">Hard</button>
+          </div>
+          <select id="statusSel" aria-label="Status"><option value="All">Any status</option><option value="todo">Not attempted</option><option value="tried">Attempted</option><option value="solved">Solved</option></select>
+          <select id="tagSel" aria-label="Topic"></select>
+        </div>
+        <div class="table-wrap">
+          <table class="ptable">
+            <thead><tr><th class="st"><span class="hide-sm">Status</span></th><th>Title</th><th class="col-tags">Topics</th><th>Difficulty</th><th class="col-subs num-col">Submits</th></tr></thead>
+            <tbody id="ptbody"></tbody>
+          </table>
+          <div class="empty" id="emptyMsg" hidden>No problems match these filters. <button class="linkbtn" id="clearFilters">Clear filters</button></div>
+        </div>
+      </section>
+      <aside class="list-side">
+        <section class="panel" id="progressPanel" aria-label="Progress"></section>
+        <section class="panel"><h2>Recent submissions</h2><ol class="recent" id="recentList"></ol></section>
+        <section class="panel"><h2>How judging works</h2>
+          <ul class="how">
+            <li><b>Run</b> checks your code on the testcases you see, against a reference solution.</li>
+            <li><b>Submit</b> adds 40 hidden tests per problem, with inputs up to 10<sup>5</sup> elements.</li>
+            <li>Each test gets 2 seconds before it counts as <b>Time Limit Exceeded</b>.</li>
+            <li>Code, testcases and submissions are saved in this browser only.</li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <main id="workView" class="work" hidden>
+    <section class="pane left-pane" aria-label="Problem">
+      <div class="tabs" role="tablist" id="leftTabs">
+        <button class="tab" role="tab" data-tab="desc">Description</button>
+        <button class="tab" role="tab" data-tab="edit">Editorial</button>
+        <button class="tab" role="tab" data-tab="subs">Submissions <span class="count" id="subCount" hidden></span></button>
+      </div>
+      <div class="pane-body" id="leftBody" aria-live="polite"></div>
+    </section>
+    <div class="split split-v" id="splitV" role="separator" aria-orientation="vertical" aria-label="Resize problem and editor" tabindex="0"></div>
+    <div class="right" id="rightCol">
+      <section class="pane editor-pane" aria-label="Code editor">
+        <div class="ed-head">
+          <span class="lang"><i>JS</i>JavaScript</span>
+          <span class="grow"></span>
+          <span class="saved" id="savedNote"></span>
+          <button class="icon-btn" id="resetBtn" title="Reset to starter code" aria-label="Reset to starter code"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+        </div>
+        <div class="ed-scroll" id="edScroll">
+          <div class="ed-inner">
+            <div class="ed-gutter" id="gutter" aria-hidden="true">1</div>
+            <div class="ed-code">
+              <pre id="hl" aria-hidden="true"></pre>
+              <textarea id="code" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Solution code" aria-describedby="edKeys"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="ed-foot"><span id="cursorPos">Ln 1, Col 1</span><span class="keys" id="edKeys"></span></div>
+      </section>
+      <div class="split split-h" id="splitH" role="separator" aria-orientation="horizontal" aria-label="Resize editor and console" tabindex="0"></div>
+      <section class="pane console" aria-label="Console">
+        <div class="tabs" role="tablist" id="conTabs">
+          <button class="tab" role="tab" data-tab="cases">Testcase</button>
+          <button class="tab" role="tab" data-tab="result">Test Result</button>
+        </div>
+        <div class="pane-body" id="conBody" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/runtime.js"></script>
+<script src="js/problems.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
